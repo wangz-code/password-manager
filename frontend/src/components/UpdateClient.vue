@@ -11,7 +11,10 @@ const fileRef = ref(null);
 const modal = reactive({
 	active: false,
 	show: () => (modal.active = true),
-	close: () => (modal.active = false),
+	close: () => {
+		initForm()
+		modal.active = false
+	},
 });
 const state = reactive({
 	form: {
