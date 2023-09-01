@@ -12,10 +12,11 @@ const modal = reactive({
 	active: false,
 	show: () => (modal.active = true),
 	close: () => {
-		initForm()
-		modal.active = false
+		initForm();
+		modal.active = false;
 	},
 });
+
 const state = reactive({
 	form: {
 		uid: "",
@@ -27,14 +28,13 @@ const state = reactive({
 	showPwd: false,
 	dataSource: [],
 });
-
+let bakDataSource;
 const initForm = () => {
 	getList();
 	for (const k in state.form) {
 		state.form[k] = "";
 	}
 };
-
 
 // 导入csv
 const importCsv = () => {
@@ -101,7 +101,15 @@ const getList = async () => {
 	const res = await localforage.getItem(dbKey);
 	if (res != null) {
 		state.dataSource = JSON.parse(res);
+		bakDataSource = JSON.parse(res);
 	}
+};
+// 搜索
+const onSearch = (e) => {
+	const value = e.target.value;
+	state.dataSource = bakDataSource.filter(({ project, desc, acount }) => {
+		return JSON.stringify([project, desc, acount]).toLowerCase().includes(value);
+	});
 };
 
 // 删除一条记录
@@ -155,8 +163,14 @@ onMounted(getList);
 			<div class="card-header">
 				<div class="card-title h5">
 					<div class="columns col-gapless">
-						<div class="column col-6 text-left">密码列表</div>
-						<div class="column col-6 text-right">
+						<div class="column col-2 text-left">密码列表</div>
+						<div class="column col-5">
+							<div class="input-group">
+								<input type="text" class="form-input" placeholder="请输入" @input="onSearch" />
+								<button class="btn btn-primary input-group-btn">搜索</button>
+							</div>
+						</div>
+						<div class="column col-5 text-right">
 							<button @click="importCsv" class="btn"><i class="icon icon-upload"></i> 导入CSV</button>
 							<button @click="exportCsv" class="btn m-l-xs"><i class="icon icon-download"></i> 导出CSV</button>
 							<button @click="modal.show" class="btn btn-primary m-l-xs"><i class="icon icon-plus"></i> 添加记录</button>
@@ -178,12 +192,12 @@ onMounted(getList);
 					<tbody>
 						<tr v-for="(item, idx) in state.dataSource">
 							<td>{{ item.project }}</td>
-							<td>{{ item.desc }}</td>
+							<td class="tooltip" :data-tooltip="item.desc"> <div  class="text-long " >{{ item.desc }}</div> </td>
 							<td>{{ item.acount }}</td>
 							<td>
 								<button @click="copyText(item.password)" class="btn btn-action btn-sm tooltip" data-tooltip="复制"><i class="icon icon-copy"></i></button>
 							</td>
-							<td class="text-center">
+							<td class="text-center" style="min-width: 100px;">
 								<button @click="editRecord(item)" class="btn btn-action btn-sm tooltip" data-tooltip="编辑"><i class="icon icon-edit"></i></button>
 								<button @click="delRecord(idx)" class="btn btn-action btn-sm tooltip m-l-xs" data-tooltip="删除"><i class="icon icon-delete"></i></button>
 							</td>
@@ -233,5 +247,11 @@ onMounted(getList);
 }
 .mt-xs {
 	margin-top: 10px;
+}
+.text-long{
+	width: 20em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 </style>

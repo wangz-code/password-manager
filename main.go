@@ -18,7 +18,7 @@ func main() {
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:  "密码管理器",
-		Width:  700,
+		Width:  1000,
 		Height: 800,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
