@@ -1,4 +1,4 @@
-# password-manager
+# password-manager 存在覆盖密码bug 请勿使用
 password-manager 简单密码管理器 使用golang + wails + vue3 开发
 采用本地缓存存储数据, 简单
 # 前端介绍
